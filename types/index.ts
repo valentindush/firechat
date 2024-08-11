@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 import { SVGProps } from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
@@ -10,4 +11,13 @@ export interface IUser {
   displayName: string | null;
   email: string | null;
   photoUrl: string | null;
+}
+
+export interface IMessage{
+  id: string
+  text: string
+  sender: string
+  receiver: string
+  chatId: string
+  timestamp: Timestamp
 }

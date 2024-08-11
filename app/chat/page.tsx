@@ -2,38 +2,81 @@
 
 import { db } from "@/config/firebase"
 import { useAuth } from "@/providers/auth.provider"
-import { IUser } from "@/types"
+import { IMessage, IUser } from "@/types"
 import { Button } from "@nextui-org/button"
-import { collection, getDocs } from "firebase/firestore"
+import { Timestamp, addDoc, collection, doc, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore"
 import Image from "next/image"
 import { BsSend } from "react-icons/bs";
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export default function ChatPage() {
     const [users, setUsers] = useState<IUser[]>([])
     const [activeReceiver, setActiveReceiver] = useState<IUser | null>(null)
     const [message, setMessage] = useState("")
+    const [messages, setMessages] = useState<IMessage[]>([])
     const { user: currentUser } = useAuth()
 
-    const getUsers = async () => {
+    const getUsers = useCallback(async () => {
+        if (!currentUser) return; // Exit if there's no current user
+
         const usersCollection = collection(db, "users")
         const userSnapshot = await getDocs(usersCollection)
-        const usersList = userSnapshot.docs.map(doc => doc.data() as IUser)
-        setUsers(usersList.filter(u => u.uid != currentUser?.uid))
-    }
+        const usersList = userSnapshot.docs
+            .map(doc => doc.data() as IUser)
+            .filter(u => u.uid !== currentUser.uid)
+
+        setUsers(usersList)
+    }, [currentUser])
 
     useEffect(() => {
-        getUsers()
-    }, [db])
+        if (currentUser) {
+            getUsers()
+        }
+    }, [currentUser, getUsers])
+
+    useEffect(() => {
+        if (currentUser && activeReceiver) {
+            const chatId = getChatId(currentUser.uid, activeReceiver.uid)
+            const messagesRef = collection(db, "messages")
+            const q = query(
+                messagesRef,
+                where("chatId", "==", chatId),
+                orderBy("timestamp", "asc")
+            )
+
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const fetchedMessages: IMessage[] = []
+                querySnapshot.forEach((doc) => {
+                    fetchedMessages.push({ id: doc.id, ...doc.data() } as IMessage)
+                })
+                setMessages(fetchedMessages)
+            })
+
+            return () => unsubscribe()
+        }
+    }, [currentUser, activeReceiver])
 
     const handleChangeReceiver = (user: IUser) => {
         setActiveReceiver(user)
     }
 
-    const handleSendMessage = () => {
-        // Implement send message functionality here
-        console.log("Sending message:", message)
-        setMessage("")
+    const getChatId = (uid1: string, uid2: string) => {
+        return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`
+    }
+
+    const handleSendMessage = async () => {
+        if (message.trim() && currentUser && activeReceiver) {
+            const chatId = getChatId(currentUser.uid, activeReceiver.uid)
+            const messagesRef = collection(db, "messages")
+            await addDoc(messagesRef, {
+                text: message.trim(),
+                sender: currentUser.uid,
+                receiver: activeReceiver.uid,
+                chatId: chatId,
+                timestamp: Timestamp.now()
+            })
+            setMessage("")
+        }
     }
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -42,6 +85,7 @@ export default function ChatPage() {
             handleSendMessage()
         }
     }
+
 
     return (
         <main className="flex px-8 h-full py-8">
@@ -74,8 +118,14 @@ export default function ChatPage() {
                                 <p className="text-sm">{activeReceiver.email}</p>
                             </div>
                         </div>
-                        <div className="flex-grow">
-                            {/* Chat messages will be displayed here */}
+                        <div className="flex-grow overflow-y-auto p-4">
+                            {messages.map((msg) => (
+                                <div key={msg.id} className={`mb-2 ${msg.sender === currentUser?.uid ? 'text-right' : 'text-left'}`}>
+                                    <div className={`inline-block p-2 rounded-lg ${msg.sender === currentUser?.uid ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                                        {msg.text}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                         <div className="flex items-center gap-2 mt-4">
                             <textarea

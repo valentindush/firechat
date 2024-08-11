@@ -2,28 +2,27 @@
 import { Button } from "@nextui-org/button";
 import { useEffect, useState } from "react";
 
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "@/config/firebase";
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/auth.provider";
 export default function Home() {
 
-  const [error, setError] = useState<string | null>(null);
-  const user = auth.currentUser
+  const { signInWithGoogle, user } = useAuth()
+
   const router = useRouter()
 
-  useEffect(()=>{
-    if(user){
+  useEffect(() => {
+    if (user) {
       router.push('/chat')
     }
-    console.log(user)
-  },[])
+  }, [])
 
-  const signIn = async()=>{
-    try {
-      await signInWithPopup(auth, new GoogleAuthProvider())
-    } catch (error: any) {
-        setError(error.message)
+  const signIn = async () => {
+    try{
+      signInWithGoogle()
+      router.push("/chat")
+    }catch(error){
+      console.log(error)
+      alert(error)
     }
   }
 

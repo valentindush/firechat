@@ -1,53 +1,78 @@
-# Next.js & NextUI Template
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+# Firechat
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/next-app-template)
+## Overview
 
-## Technologies Used
+A simple real-time chat application built with Next.js, Firebase
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
 
-## How to Use
+## Getting Started
 
-### Use the template with create-next-app
+### Prerequisites
 
-To create a new project based on this template using `create-next-app`, run the following command:
+- Node.js (v14 or later)
+- npm or yarn
+- Firebase account
 
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
-```
+### Installation
 
-### Install dependencies
+1. Clone the repository:
+   ```
+   git clone https://github.com/valentindush/firechat.git
+   ```
 
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
+2. Navigate to the project directory:
+   ```
+   cd firechat
+   ```
 
-```bash
-npm install
-```
+3. Install dependencies:
+   ```
+   pnpm install
+   ```
+   or
+   ```
+   npm install
+   ```
+   or
+   ```
+   yarn install
+   ```
 
-### Run the development server
+4. Set up your Firebase configuration:
+   - Create a new Firebase project
+   - Enable Firestore and Authentication
+   - Copy your Firebase config
+   - Create a `.env.local` file in the root directory and add your Firebase config:
+     ```
+     NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+     NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+     ```
 
-```bash
-npm run dev
-```
+5. Run the development server:
+    ```
+    pnpm dev
+    ```
+    or
+   ```
+   npm run dev
+   ```
+   or
+   ```
+   yarn dev
+   ```
 
-### Setup pnpm (optional)
+6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
 
-```bash
-public-hoist-pattern[]=*@nextui-org/*
-```
+## Acknowledgements
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+- Next.js
+- Firebase
+- NextUI
+- Tailwind CSS
+- React Icons

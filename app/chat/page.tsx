@@ -3,24 +3,24 @@
 import { db } from "@/config/firebase"
 import { useAuth } from "@/providers/auth.provider"
 import { IMessage, IUser } from "@/types"
-import { Button } from "@nextui-org/button"
 import { Timestamp, addDoc, collection, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore"
-import Image from "next/image"
-import { BsSend } from "react-icons/bs"
 import { useCallback, useEffect, useState, useRef } from "react"
-import { User } from "firebase/auth"
-import { Navbar } from "@/components/navbar"
 import UsersList from "./usersList"
 import ChatSection from "./chatSection"
+import { useRouter } from "next/navigation"
+import { Spinner } from "@nextui-org/spinner";
+
 
 export default function ChatPage() {
     const [users, setUsers] = useState<IUser[]>([])
     const [activeReceiver, setActiveReceiver] = useState<IUser | null>(null)
     const [message, setMessage] = useState("")
     const [messages, setMessages] = useState<IMessage[]>([])
-    const { user: currentUser } = useAuth()
+    const { user: currentUser, authStateLoading } = useAuth()
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [showUsers, setShowUsers] = useState(true)
+
+    const router = useRouter()
 
     const getUsers = useCallback(async () => {
         if (!currentUser) return
@@ -33,6 +33,12 @@ export default function ChatPage() {
 
         setUsers(usersList)
     }, [currentUser])
+
+    useEffect(() => {
+        if (!authStateLoading && !currentUser) {
+            router.replace('/')
+        }
+    }, [currentUser, authStateLoading])
 
     useEffect(() => {
         if (currentUser) {
@@ -89,26 +95,32 @@ export default function ChatPage() {
         }
     }
 
+    if(!authStateLoading && !currentUser) return (
+        <Spinner size="lg" />
+    )
+
     return (
-        <main className="flex flex-col h-full md:flex-row">
-            <UsersList
-                users={users}
-                activeReceiver={activeReceiver}
-                handleChangeReceiver={handleChangeReceiver}
-                showUsers={showUsers}
-                setShowUsers={setShowUsers}
-            />
-            <ChatSection
-                activeReceiver={activeReceiver}
-                currentUser={currentUser}
-                messages={messages}
-                message={message}
-                setMessage={setMessage}
-                handleSendMessage={handleSendMessage}
-                handleKeyPress={handleKeyPress}
-                messagesEndRef={messagesEndRef}
-                setShowUsers={setShowUsers}
-            />
-        </main>
+        <>
+            <main className="flex flex-col h-full md:flex-row">
+                <UsersList
+                    users={users}
+                    activeReceiver={activeReceiver}
+                    handleChangeReceiver={handleChangeReceiver}
+                    showUsers={showUsers}
+                    setShowUsers={setShowUsers}
+                />
+                <ChatSection
+                    activeReceiver={activeReceiver}
+                    currentUser={currentUser}
+                    messages={messages}
+                    message={message}
+                    setMessage={setMessage}
+                    handleSendMessage={handleSendMessage}
+                    handleKeyPress={handleKeyPress}
+                    messagesEndRef={messagesEndRef}
+                    setShowUsers={setShowUsers}
+                />
+            </main>
+        </>
     )
 }

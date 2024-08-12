@@ -12,10 +12,10 @@ export default function Home() {
   const router = useRouter()
 
   useEffect(() => {
-    if (user) {
+    if (!authStateLoading && user) {
       router.push('/chat')
     }
-  }, [user])
+  }, [user, authStateLoading])
 
   const signIn = async () => {
     try{

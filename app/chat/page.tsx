@@ -18,6 +18,7 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<IMessage[]>([])
     const { user: currentUser } = useAuth()
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const [showUsers, setShowUsers] = useState(true)
 
     const getUsers = useCallback(async () => {
         if (!currentUser) return
@@ -87,38 +88,49 @@ export default function ChatPage() {
     }
 
     return (
-        <main className="flex h-full">
-            <UsersList 
-                users={users} 
-                activeReceiver={activeReceiver} 
-                handleChangeReceiver={handleChangeReceiver} 
+        <main className="flex flex-col h-full md:flex-row">
+            <UsersList
+                users={users}
+                activeReceiver={activeReceiver}
+                handleChangeReceiver={handleChangeReceiver}
+                showUsers={showUsers}
+                setShowUsers={setShowUsers}
             />
-            <ChatSection 
-                activeReceiver={activeReceiver} 
-                currentUser={currentUser} 
+            <ChatSection
+                activeReceiver={activeReceiver}
+                currentUser={currentUser}
                 messages={messages}
                 message={message}
                 setMessage={setMessage}
                 handleSendMessage={handleSendMessage}
                 handleKeyPress={handleKeyPress}
                 messagesEndRef={messagesEndRef}
+                setShowUsers={setShowUsers}
             />
         </main>
     )
 }
 
-function UsersList({ users, activeReceiver, handleChangeReceiver }: {
+function UsersList({ users, activeReceiver, handleChangeReceiver, showUsers, setShowUsers }: {
     users: IUser[],
     activeReceiver: IUser | null,
-    handleChangeReceiver: (user: IUser) => void
+    handleChangeReceiver: (user: IUser) => void,
+    showUsers: boolean,
+    setShowUsers: (show: boolean) => void
 }) {
     return (
-        <section className="w-1/4 min-w-[250px] p-4 px-8 border-r border-gray-200 dark:border-gray-700">
-            <h2 className="font-semibold text-lg mb-4">Friends</h2>
+        <section className={`w-full md:w-1/4 md:min-w-[250px] p-4 px-8 border-b md:border-r border-gray-200 dark:border-gray-700 ${showUsers ? 'block' : 'hidden md:block'}`}>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="font-semibold text-lg">Friends</h2>
+                <Button className="md:hidden" onClick={() => setShowUsers(false)}>Close</Button>
+            </div>
             {users.map((user) => (
                 <div 
                     key={user.uid} 
-                    onClick={() => handleChangeReceiver(user)} 
+                    onClick={() => {
+                        handleChangeReceiver(user)
+                        setShowUsers(false)
+                    }} 
                     className={`flex items-center gap-2 p-4 rounded-lg cursor-pointer transition-colors ${
                         activeReceiver?.uid === user.uid ? 'bg-blue-100 dark:bg-blue-900' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
@@ -134,7 +146,7 @@ function UsersList({ users, activeReceiver, handleChangeReceiver }: {
     )
 }
 
-function ChatSection({ activeReceiver, currentUser, messages, message, setMessage, handleSendMessage, handleKeyPress, messagesEndRef }: {
+function ChatSection({ activeReceiver, currentUser, messages, message, setMessage, handleSendMessage, handleKeyPress, messagesEndRef, setShowUsers }: {
     activeReceiver: IUser | null,
     currentUser: User | null,
     messages: IMessage[],
@@ -142,7 +154,8 @@ function ChatSection({ activeReceiver, currentUser, messages, message, setMessag
     setMessage: (message: string) => void,
     handleSendMessage: () => void,
     handleKeyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void,
-    messagesEndRef: React.RefObject<HTMLDivElement>
+    messagesEndRef: React.RefObject<HTMLDivElement>,
+    setShowUsers: (show: boolean) => void
 }) {
     if (!activeReceiver) {
         return (
@@ -150,6 +163,7 @@ function ChatSection({ activeReceiver, currentUser, messages, message, setMessag
                 <div className="text-center">
                     <h2 className="text-2xl font-medium mb-2">Welcome, {currentUser?.displayName}!</h2>
                     <p className="text-xl">Select a friend to start chatting.</p>
+                    <Button className="mt-4 md:hidden" onClick={() => setShowUsers(true)}>Show Friends</Button>
                 </div>
             </section>
         )
@@ -159,6 +173,7 @@ function ChatSection({ activeReceiver, currentUser, messages, message, setMessag
         <section className="flex-grow flex flex-col h-full overflow-hidden">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
+                    <Button className="md:hidden mr-2" onClick={() => setShowUsers(true)}>Back</Button>
                     <Image className="rounded-full" width={40} height={40} src={activeReceiver.photoUrl || ""} alt="profile" />
                     <div>
                         <p className="font-medium">{activeReceiver.displayName}</p>
@@ -166,7 +181,7 @@ function ChatSection({ activeReceiver, currentUser, messages, message, setMessag
                     </div>
                 </div>
             </div>
-            <div className="flex-grow max-h-[80%] p-4 overflow-auto">
+            <div className="flex-grow max-h-[calc(100vh-200px)] p-4 overflow-auto">
                 {messages.map((msg) => (
                     <div key={msg.id} className={`mb-2 ${msg.sender === currentUser?.uid ? 'text-right' : 'text-left'}`}>
                         <div className={`inline-block p-2 rounded-lg ${

@@ -1,12 +1,13 @@
 "use client"
 import { Button } from "@nextui-org/button";
+import { Spinner } from "@nextui-org/spinner";
 import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/auth.provider";
 export default function Home() {
 
-  const { signInWithGoogle, user } = useAuth()
+  const { signInWithGoogle, user, loading, authStateLoading } = useAuth()
 
   const router = useRouter()
 
@@ -14,7 +15,7 @@ export default function Home() {
     if (user) {
       router.push('/chat')
     }
-  }, [])
+  }, [user])
 
   const signIn = async () => {
     try{
@@ -28,7 +29,9 @@ export default function Home() {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <Button onClick={signIn} color="primary">Sign in with google</Button>
+      {authStateLoading ? <div>
+        <Spinner />
+      </div>: <Button onClick={signIn} color="primary">Sign in with google</Button>}
     </section>
   );
 }

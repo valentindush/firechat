@@ -20,7 +20,7 @@ export const Navbar = () => {
   }
 
   return (
-    <div className="p-8 flex items-center justify-between">
+    <div className="px-8 py-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <h2 className="text-xl font-bold">🔥Chat</h2>
         <ThemeSwitch />

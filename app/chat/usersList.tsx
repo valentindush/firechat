@@ -22,14 +22,14 @@ export default function UsersList({ users, activeReceiver, handleChangeReceiver,
                         handleChangeReceiver(user)
                         setShowUsers(false)
                     }} 
-                    className={`flex items-center gap-2 p-4 rounded-lg cursor-pointer transition-colors ${
+                    className={`flex items-center gap-2 p-4 max-w-full w-full rounded-lg cursor-pointer transition-colors ${
                         activeReceiver?.uid === user.uid ? 'bg-blue-100 dark:bg-blue-900' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
                 >
                     <Image className="rounded-full" width={40} height={40} src={user.photoUrl || ""} alt="profile" />
                     <div>
-                        <p className="font-medium">{user.displayName}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                        <p className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">{user.displayName}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{user.email}</p>
                     </div>
                 </div>
             ))}

@@ -1,9 +1,11 @@
 "use client"
 import 'swiper/css';
-import 'swiper/css/bundle'
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/modal";
-import {Navigation} from "swiper/modules"
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/modal";
+import { Navigation } from 'swiper/modules';
 import Image from 'next/image';
 
 export default function FilePreview ({urls}: {urls: string[]}){
@@ -12,7 +14,8 @@ export default function FilePreview ({urls}: {urls: string[]}){
 
     return (
         <div>
-            <div className="grid grid-cols-2" onClick={onOpen}>
+            {urls.length > 1 && <p className='text-xs font-light pb-2'>({urls.length})</p>}
+            <div className="grid grid-cols-2 gap-2" onClick={onOpen}>
                 {urls.slice(0, 4).map((url, index) => (
                     <Image key={index} src={url} alt="Attached file" width={200} height={200} className="rounded-lg" />
                 ))}
@@ -22,8 +25,10 @@ export default function FilePreview ({urls}: {urls: string[]}){
                     {(onClose) => (
                         <Swiper
                             slidesPerView={1}
+                            spaceBetween={50}
                             className="w-full h-full"
                             modules={[Navigation]}
+                            navigation
                         >
                             {urls.map((url, index) => (
                                 <SwiperSlide key={index}>

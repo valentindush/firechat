@@ -2,12 +2,12 @@ import { IMessage, IUser } from "@/types"
 import { Button } from "@nextui-org/button"
 import { User } from "firebase/auth"
 import Image from "next/image"
-import Link from "next/link"
 import { BsSend } from "react-icons/bs"
 import { FaRegImage } from "react-icons/fa6";
 import { FaMicrophone } from "react-icons/fa";
 import { Spinner } from "@nextui-org/spinner"
 import React from "react"
+import FilePreview from "@/components/chat/filePreview"
 
 interface ChatSectionProps {
     sending: boolean,
@@ -43,10 +43,6 @@ export default function ChatSection(props: ChatSectionProps) {
         }
     }
 
-    const renderFilePreview = (url: string) => {
-        return <Image src={url} alt="Attached file" width={200} height={200} className="rounded-lg" />;
-    }
-
     return (
         <section className="flex-grow flex flex-col h-full overflow-hidden">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -67,11 +63,7 @@ export default function ChatSection(props: ChatSectionProps) {
                             {msg.text}
                             {msg.fileUrls && msg.fileUrls.length > 0 && (
                                 <div className="mt-2">
-                                    {msg.fileUrls.map((url, index) => (
-                                        <div key={index} className="mb-2">
-                                            {renderFilePreview(url)}
-                                        </div>
-                                    ))}
+                                    {msg.fileUrls.length > 0 && <FilePreview urls={msg.fileUrls} />}
                                 </div>
                             )}
                         </div>

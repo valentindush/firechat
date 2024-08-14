@@ -19,5 +19,6 @@ export interface IMessage{
   sender: string
   receiver: string
   chatId: string
-  timestamp: Timestamp
+  timestamp: Timestamp,
+  fileUrls?: string[]
 }

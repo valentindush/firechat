@@ -2,13 +2,14 @@ import { IMessage, IUser } from "@/types"
 import { Button } from "@nextui-org/button"
 import { User } from "firebase/auth"
 import Image from "next/image"
+import Link from "next/link"
 import { BsSend } from "react-icons/bs"
 import { FaRegImage } from "react-icons/fa6";
 import { FaMicrophone } from "react-icons/fa";
-import {Spinner} from "@nextui-org/spinner"
+import { Spinner } from "@nextui-org/spinner"
 import React from "react"
 
-interface ChatSectionProps{
+interface ChatSectionProps {
     sending: boolean,
     activeReceiver: IUser | null,
     currentUser: User | null,
@@ -37,17 +38,13 @@ export default function ChatSection(props: ChatSectionProps) {
     }
 
     const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if(e.target.files){
+        if (e.target.files) {
             props.setFiles(e.target.files)
         }
     }
 
     const renderFilePreview = (url: string) => {
-        if (url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-            return <Image src={url} alt="Attached file" width={200} height={200} className="rounded-lg" />;
-        } else {
-            return <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Attached File</a>;
-        }
+        return <Image src={url} alt="Attached file" width={200} height={200} className="rounded-lg" />;
     }
 
     return (
@@ -121,7 +118,7 @@ export default function ChatSection(props: ChatSectionProps) {
                         className="py-8"
                         disabled={props.sending}
                     >
-                        {!props.sending? <BsSend size={20} />: <Spinner color="white" />}
+                        {!props.sending ? <BsSend size={20} /> : <Spinner color="white" />}
                     </Button>
                 </div>
             </div>

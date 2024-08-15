@@ -8,6 +8,7 @@ import { FaMicrophone, FaStop } from "react-icons/fa";
 import { Spinner } from "@nextui-org/spinner"
 import React from "react"
 import FilePreview from "@/components/chat/filePreview"
+import AudioPreview from "@/components/chat/audioPreview"
 
 interface ChatSectionProps {
     sending: boolean,
@@ -21,7 +22,7 @@ interface ChatSectionProps {
     recordingDuration: number
     setFiles: (files: FileList | null) => void,
     setMessage: (message: string) => void,
-    handleSendMessage: () => void,
+    handleSendMessage: () => Promise<void>,
     handleKeyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void,
     messagesEndRef: React.RefObject<HTMLDivElement>,
     setShowUsers: (show: boolean) => void
@@ -74,6 +75,9 @@ export default function ChatSection(props: ChatSectionProps) {
                                 <div className="mt-2">
                                     {msg.fileUrls.length > 0 && <FilePreview urls={msg.fileUrls} />}
                                 </div>
+                            )}
+                            {msg.audioUrl && (
+                                <AudioPreview url={msg.audioUrl} />
                             )}
                         </div>
                     </div>

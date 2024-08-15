@@ -21,4 +21,5 @@ export interface IMessage{
   chatId: string
   timestamp: Timestamp,
   fileUrls?: string[]
+  audioUrl?: string
 }

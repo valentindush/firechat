@@ -4,9 +4,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { useAuth } from "@/providers/auth.provider";
 import { Button } from "@nextui-org/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
-import { User } from "@nextui-org/user"
 import { IoIosLogOut } from "react-icons/io";
-import {Avatar, AvatarGroup, AvatarIcon} from "@nextui-org/avatar";
+import {Avatar} from "@nextui-org/avatar";
 import { useRouter } from "next/navigation";
 
 export const Navbar = () => {

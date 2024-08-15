@@ -4,7 +4,7 @@ import { User } from "firebase/auth"
 import Image from "next/image"
 import { BsSend } from "react-icons/bs"
 import { FaRegImage } from "react-icons/fa6";
-import { FaMicrophone } from "react-icons/fa";
+import { FaMicrophone, FaStop } from "react-icons/fa";
 import { Spinner } from "@nextui-org/spinner"
 import React from "react"
 import FilePreview from "@/components/chat/filePreview"
@@ -16,6 +16,9 @@ interface ChatSectionProps {
     messages: IMessage[],
     message: string,
     files: FileList | null,
+    isRecording: boolean,
+    handleVoiceRecording: () => void,
+    recordingDuration: number
     setFiles: (files: FileList | null) => void,
     setMessage: (message: string) => void,
     handleSendMessage: () => void,
@@ -41,6 +44,12 @@ export default function ChatSection(props: ChatSectionProps) {
         if (e.target.files) {
             props.setFiles(e.target.files)
         }
+    }
+
+    const formatDuration = (duration: number) => {
+        const minutes = Math.floor(duration / 60)
+        const seconds = duration % 60
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`
     }
 
     return (
@@ -85,9 +94,17 @@ export default function ChatSection(props: ChatSectionProps) {
                 <div className="flex items-center gap-2">
                     <div className="">
                         <button
-                            className="p-4 bg-gray-800 rounded-xl"
+                            className={`p-4 ${props.isRecording ? 'bg-red-500' : 'bg-gray-800'} flex items-center gap-2 rounded-xl text-white transition-all ease-in duration-300`}
+                            onClick={props.handleVoiceRecording}
                         >
-                            <FaMicrophone size={20} />
+                            {props.isRecording ? (
+                                <>
+                                    <span className="mr-2">{formatDuration(props.recordingDuration)}</span>
+                                    <FaStop size={10} />
+                                </>
+                            ) : (
+                                <FaMicrophone size={20} />
+                            )}
                         </button>
                     </div>
                     <div className="">
@@ -100,6 +117,7 @@ export default function ChatSection(props: ChatSectionProps) {
                         value={props.message}
                         onChange={(e) => props.setMessage(e.target.value)}
                         onKeyDown={props.handleKeyPress}
+                        disabled={props.sending}
                         className="flex-grow p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                         placeholder="Type your message..."
                         rows={2}
